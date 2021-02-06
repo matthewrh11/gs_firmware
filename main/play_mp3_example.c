@@ -48,6 +48,7 @@ void app_main(void)
 {
 	ESP_LOGE("hi my name is jake","");
 	ESP_LOGI("my name is matty!", "");
+	ESP_LOGW("hey brett!", "");
     audio_pipeline_handle_t pipeline;
     audio_element_handle_t i2s_stream_writer, mp3_decoder;
     esp_log_level_set("*", ESP_LOG_WARN);
