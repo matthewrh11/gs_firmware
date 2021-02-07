@@ -23,6 +23,7 @@
 #include "board.h"
 
 #include "print_names.h"
+#include "ch_button_press.h"
 
 static const char *TAG = "PLAY_MP3_FLASH";
 /*
@@ -49,6 +50,7 @@ int mp3_music_read_cb(audio_element_handle_t el, char *buf, int len, TickType_t 
 void app_main(void)
 {
 	print_names();
+	button_press();
     audio_pipeline_handle_t pipeline;
     audio_element_handle_t i2s_stream_writer, mp3_decoder;
     esp_log_level_set("*", ESP_LOG_WARN);
