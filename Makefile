@@ -1,2 +1,2 @@
-PROJECT_NAME := play_mp3
+PROJECT_NAME := gs_firmware
 include $(ADF_PATH)/project.mk
