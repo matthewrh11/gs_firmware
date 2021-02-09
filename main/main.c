@@ -24,6 +24,7 @@
 
 #include "print_names.h"
 #include "ch_button_press.h"
+#include "gs_wifi.h"
 
 static const char *TAG = "PLAY_MP3_FLASH";
 /*
@@ -51,6 +52,11 @@ void app_main(void)
 {
 	print_names();
 	button_press();
+	gs_wifi_init();
+	gs_wifi_connect("BELL266", "JillRach");
+
+    vTaskDelay(3000 / portTICK_PERIOD_MS);
+
     audio_pipeline_handle_t pipeline;
     audio_element_handle_t i2s_stream_writer, mp3_decoder;
     esp_log_level_set("*", ESP_LOG_WARN);
