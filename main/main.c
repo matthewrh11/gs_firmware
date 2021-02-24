@@ -51,7 +51,9 @@ int mp3_music_read_cb(audio_element_handle_t el, char *buf, int len, TickType_t 
 void app_main(void)
 {
 	print_names();
-	button_press();
+
+	button_isr_config();
+
 	gs_wifi_init();
 	gs_wifi_connect("BELL266", "JillRach");
 
