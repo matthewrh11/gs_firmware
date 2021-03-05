@@ -1,12 +1,97 @@
-/* Play mp3 file by audio pipeline
+#include <esp_log.h>
+#include <driver/i2s.h>
+#include <driver/i2c.h>
+#include "board.h"
 
-   This example code is in the Public Domain (or CC0 licensed, at your option.)
+#include "ch_button_press.h"
 
-   Unless required by applicable law or agreed to in writing, this
-   software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-   CONDITIONS OF ANY KIND, either express or implied.
-*/
+#include "gs_wifi.h"
 
+#include "my_i2s.h"
+#include "my_es8388.h"
+
+#include "es8388.h"
+
+/*
+ * Digital Filtering Code
+ * You can implement your own digital filters (e.g. FIR / IIR / biquad / ...) here.
+ * Please mind that you need to use seperate storage for left / right channels for stereo filtering.
+ */
+int32_t dummyfilter(int32_t x){
+	return x;
+}
+
+void app_main(void){
+
+	printf("[filter-dsp] Initializing wifi...\r\n");
+	gs_wifi_init();
+	//gs_wifi_connect("BELL512", "alllowercase");
+
+	printf("[filter-dsp] Initializing audio codec via I2C...\r\n");
+
+	if (my_es8388_init() != ESP_OK) {
+		printf("[filter-dsp] Audio codec initialization failed!\r\n");
+	}
+	else {
+		printf("[filter-dsp] Audio codec initialization OK\r\n");
+	}
+
+	printf("[filter-dsp] Initializing bypass button\r\n");
+	button_isr_config();
+
+	printf("[filter-dsp] Initializing input I2S...\r\n");
+	my_i2s_init();
+
+	printf("[filter-dsp] Initializing MCLK output...\r\n");
+	mclk_init();
+
+	/*******************/
+
+	printf("[filter-dsp] Enabling Passthrough mode...\r\n");
+
+	size_t i2s_bytes_read = 0;
+	size_t i2s_bytes_written = 0;
+
+	int32_t i2s_buffer_read[I2S_READLEN / sizeof(int32_t)];
+	int32_t i2s_buffer_write[I2S_READLEN / sizeof(int32_t)];
+
+	ESP_LOGW("bypass_state", "%d", get_bypass_state());
+
+	// continuously read data over I2S, pass it through the filtering function and write it back
+	while (true) {
+		i2s_bytes_read = I2S_READLEN;
+		i2s_read(I2S_NUM, i2s_buffer_read, I2S_READLEN, &i2s_bytes_read, 100);
+
+		// Do DSP effect stuff
+		if (!get_bypass_state()){
+			// left channel filter
+			for (uint32_t i = 0; i < i2s_bytes_read / 2; i += 2){
+				i2s_buffer_write[i] = dummyfilter(i2s_buffer_read[i]);
+				//ESP_LOGW("LEFT_READ", "index: %d, value: %d", i, i2s_buffer_read[i]);
+			}
+
+			// right channel filter
+			for (uint32_t i = 1; i < i2s_bytes_read / 2; i += 2){
+				i2s_buffer_write[i] = dummyfilter(i2s_buffer_read[i]);
+				//ESP_LOGE("RIGHT_READ", "index: %d, value: %d", i, i2s_buffer_read[i]);
+			}
+		}
+		// Bypass effects, in -> out
+		else {
+			// passthrough all data
+			for (uint32_t i = 0; i < i2s_bytes_read / 2; i += 1){
+				i2s_buffer_write[i] = i2s_buffer_read[i];
+				//ESP_LOGW("LEFT_READ", "index: %d, value: %d", i, i2s_buffer_read[i]);
+			}
+		}
+		i2s_write(I2S_NUM, i2s_buffer_write, i2s_bytes_read, &i2s_bytes_written, 100);
+	}
+}
+
+// END
+
+
+#if (0)
 #include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -21,6 +106,8 @@
 #include "mp3_decoder.h"
 #include "filter_resample.h"
 #include "board.h"
+
+//#include "dsprunner.h"
 
 #include "print_names.h"
 #include "ch_button_press.h"
@@ -51,11 +138,9 @@ int mp3_music_read_cb(audio_element_handle_t el, char *buf, int len, TickType_t 
 void app_main(void)
 {
 	print_names();
-
 	button_isr_config();
-
 	gs_wifi_init();
-	gs_wifi_connect("BELL266", "JillRach");
+	gs_wifi_connect("BELL512", "alllowercase");
 
     vTaskDelay(3000 / portTICK_PERIOD_MS);
 
@@ -175,3 +260,4 @@ void app_main(void)
     audio_element_deinit(i2s_stream_writer);
     audio_element_deinit(mp3_decoder);
 }
+#endif
