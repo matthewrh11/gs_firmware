@@ -9,7 +9,8 @@
 
 #include "my_i2s.h"
 #include "my_es8388.h"
-
+#include "gs_aws_connect.h"
+#include "gs_effect_tremolo.h"
 #include "es8388.h"
 
 /*
@@ -25,7 +26,10 @@ void app_main(void){
 
 	printf("[filter-dsp] Initializing wifi...\r\n");
 	gs_wifi_init();
-	//gs_wifi_connect("BELL512", "alllowercase");
+	gs_wifi_connect("BELL266", "JillRach");
+    vTaskDelay(10000 / portTICK_PERIOD_MS);
+
+    xTaskCreatePinnedToCore(&aws_iot_task, "aws_iot_task", 9216, NULL, 5, NULL, 1);
 
 	printf("[filter-dsp] Initializing audio codec via I2C...\r\n");
 
