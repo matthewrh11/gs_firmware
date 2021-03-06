@@ -10,6 +10,7 @@
 #include "my_i2s.h"
 #include "my_es8388.h"
 #include "gs_aws_connect.h"
+#include "gs_effect_tremolo.h"
 #include "es8388.h"
 
 /*

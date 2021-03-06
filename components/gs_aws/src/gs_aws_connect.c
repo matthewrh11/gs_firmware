@@ -20,6 +20,7 @@
 #include "aws_iot_mqtt_client_interface.h"
 
 #include "gs_aws_config.h"
+#include "gs_effect_parser.h"
 
 const char* TOPIC = "topics/BankInfoStatus";
 const int CONNECTED_BIT = BIT0;
@@ -28,7 +29,7 @@ const char* CLIENT_ID = "Main_Pedal";
 
 void iot_subscribe_callback_handler(AWS_IoT_Client *pClient, char *topicName, uint16_t topicNameLen,
                                     IoT_Publish_Message_Params *params, void *pData) {
-    ESP_LOGI(TAG, "%.*s\t%.*s", topicNameLen, topicName, (int) params->payloadLen, (char *)params->payload);
+	gs_effect_parser((char *)params->payload, (int) params->payloadLen);
 }
 
 void disconnectCallbackHandler(AWS_IoT_Client *pClient, void *data) {
