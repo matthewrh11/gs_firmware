@@ -19,8 +19,11 @@ void app_main(void){
 
 	printf("[filter-dsp] Initializing wifi...\r\n");
 	gs_wifi_init();
+
+	//gs_wifi_connect();
 	//gs_wifi_connect("BELL266", "JillRach");
 	gs_wifi_connect("BELL512", "alllowercase");
+
     vTaskDelay(10000 / portTICK_PERIOD_MS);
 
     xTaskCreatePinnedToCore(&aws_iot_task, "aws_iot_task", 9216, NULL, 5, NULL, 1);
@@ -42,8 +45,6 @@ void app_main(void){
 
 	printf("[filter-dsp] Initializing MCLK output...\r\n");
 	mclk_init();
-
-	/*******************/
 
 	printf("[filter-dsp] Enabling Passthrough mode...\r\n");
 	// continuously read data over I2S, pass it through the filtering function and write it back

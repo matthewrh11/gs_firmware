@@ -1,3 +1,5 @@
+#include "gs_effect_tremolo.h"
+
 #include "esp_log.h"
 #include <stdbool.h>
 #include <string.h>
