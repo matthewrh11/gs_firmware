@@ -20,9 +20,9 @@ void app_main(void){
 	printf("[filter-dsp] Initializing wifi...\r\n");
 	gs_wifi_init();
 
-	//gs_wifi_connect();
+	gs_wifi_connect("FibreOP166", "A2C5TEF9WEE5F9P" );
 	//gs_wifi_connect("BELL266", "JillRach");
-	gs_wifi_connect("BELL512", "alllowercase");
+	//gs_wifi_connect("BELL512", "alllowercase");
 
     vTaskDelay(10000 / portTICK_PERIOD_MS);
 
@@ -48,6 +48,7 @@ void app_main(void){
 
 	printf("[filter-dsp] Enabling Passthrough mode...\r\n");
 	// continuously read data over I2S, pass it through the filtering function and write it back
+	set_bypass_state(0);
 	while (true) {
 		run_effects();
 	}

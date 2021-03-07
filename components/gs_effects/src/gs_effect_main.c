@@ -27,16 +27,17 @@ int32_t temp_buffer2[I2S_READLEN / sizeof(int32_t)];
  */
 
 void run_effects(){
+
 	// continuously read data over I2S, pass it through the filtering function and write it back
 	i2s_bytes_read = I2S_READLEN;
 	i2s_read(I2S_NUM, i2s_buffer_read, I2S_READLEN, &i2s_bytes_read, 100);
 
 	// Do DSP stuff
 	if (!get_bypass_state()){
-		gs_fuzz_effect(i2s_buffer_read, i2s_bytes_read, temp_buffer1);
-		gs_fuzz_effect(temp_buffer1, i2s_bytes_read, temp_buffer2);
-		gs_fuzz_effect(temp_buffer2, i2s_bytes_read, temp_buffer1);
-		gs_fuzz_effect(temp_buffer1, i2s_bytes_read, i2s_buffer_write);
+		gs_tremolo_effect(i2s_buffer_read, i2s_bytes_read, i2s_buffer_write);
+//		gs_fuzz_effect(temp_buffer1, i2s_bytes_read, temp_buffer2);
+//		gs_fuzz_effect(temp_buffer2, i2s_bytes_read, temp_buffer1);
+//		gs_fuzz_effect(temp_buffer1, i2s_bytes_read, i2s_buffer_write);
 	}
 	// Passthrough all data
 	else {
