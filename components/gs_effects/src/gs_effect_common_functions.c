@@ -1,8 +1,8 @@
 #include "gs_effect_common_functions.h"
 
-int32_t max(int32_t *x, size_t size){
-	int32_t max_val = 0;
-	for (size_t i = 0; i < size; i++){
+int32_t max_left(int32_t *x, size_t size){
+	int32_t max_val = x[0];
+	for (size_t i = 0; i < size; i += 2){
 		if (abs(x[i]) > max_val){
 			max_val = abs(x[i]);
 		}
@@ -10,15 +10,25 @@ int32_t max(int32_t *x, size_t size){
 	return max_val;
 }
 
-int sign(int x){
+int32_t max_right(int32_t *x, size_t size){
+	int32_t max_val = x[1];
+	for (size_t i = 1; i < size; i += 2){
+		if (abs(x[i]) > max_val){
+			max_val = abs(x[i]);
+		}
+	}
+	return max_val;
+}
+
+float sign(int x){
 	if (x > 0){
-		return 1;
+		return 1.0;
 	}
 	else if (x < 0){
-		return -1;
+		return -1.0;
 	}
 	else {
-		return 0;
+		return 0.0;
 	}
 }
 

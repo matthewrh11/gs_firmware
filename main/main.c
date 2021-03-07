@@ -1,7 +1,10 @@
 #include <esp_log.h>
+#include <esp_task_wdt.h>
 #include <driver/i2s.h>
 #include <driver/i2c.h>
 #include "board.h"
+
+#include "soc/rtc_wdt.h"
 
 #include "ch_button_press.h"
 
@@ -24,7 +27,7 @@ void app_main(void){
 	//gs_wifi_connect("BELL266", "JillRach");
 	gs_wifi_connect("BELL512", "alllowercase");
 
-    vTaskDelay(10000 / portTICK_PERIOD_MS);
+    vTaskDelay(5000 / portTICK_PERIOD_MS);
 
     xTaskCreatePinnedToCore(&aws_iot_task, "aws_iot_task", 9216, NULL, 5, NULL, 1);
 
@@ -50,6 +53,8 @@ void app_main(void){
 	// continuously read data over I2S, pass it through the filtering function and write it back
 	while (true) {
 		run_effects();
+		//rtc_wdt_feed();
+		//vTaskDelay(10 / portTICK_PERIOD_MS);
 	}
 }
 
