@@ -87,7 +87,69 @@ static int i2c_init(){
 
 esp_err_t my_es8388_init(){
 	esp_err_t res = ESP_OK;
+#if(1)
+	i2c_config_t i2c_config = {
+			.mode = I2C_MODE_MASTER,
+			.sda_io_num = GPIO_NUM_18,
+			.sda_pullup_en = true,
+			.scl_io_num = GPIO_NUM_23,
+			.scl_pullup_en = true,
+			.master.clk_speed = 100000
+		};
 
+	res |= i2c_param_config(I2C_NUM, &i2c_config);
+	res |= i2c_driver_install(I2C_NUM, i2c_config.mode, 0, 0, 0);
+
+	/* mute DAC during setup, power up all systems, slave mode */
+	res |= es_write_reg(ES8388_ADDR, ES8388_DACCONTROL3, 0x04);
+	res |= es_write_reg(ES8388_ADDR, ES8388_CONTROL2, 0x50);
+	res |= es_write_reg(ES8388_ADDR, ES8388_CHIPPOWER, 0x00);
+	res |= es_write_reg(ES8388_ADDR, ES8388_MASTERMODE, 0x00);
+
+	/* power up DAC and enable only LOUT1 / ROUT1, ADC sample rate = DAC sample rate */
+	res |= es_write_reg(ES8388_ADDR, ES8388_DACPOWER, 0x30);
+	res |= es_write_reg(ES8388_ADDR, ES8388_CONTROL1, 0x12);
+
+	/* DAC I2S setup: 16 bit word length, I2S format; MCLK / Fs = 256*/
+	res |= es_write_reg(ES8388_ADDR, ES8388_DACCONTROL1, 0x18);
+	res |= es_write_reg(ES8388_ADDR, ES8388_DACCONTROL2, 0x02);
+
+	/* DAC to output route mixer configuration */
+	res |= es_write_reg(ES8388_ADDR, ES8388_DACCONTROL16, 0x00);
+	res |= es_write_reg(ES8388_ADDR, ES8388_DACCONTROL17, 0x90);
+	res |= es_write_reg(ES8388_ADDR, ES8388_DACCONTROL20, 0x90);
+
+	/* DAC and ADC use same LRCK, enable MCLK input; output resistance setup */
+	res |= es_write_reg(ES8388_ADDR, ES8388_DACCONTROL21, 0x80);
+	res |= es_write_reg(ES8388_ADDR, ES8388_DACCONTROL23, 0x00);
+
+	/* DAC volume control: 0dB (maximum, unattenuated)  */
+	res |= es_write_reg(ES8388_ADDR, ES8388_DACCONTROL5, 0x00);
+	res |= es_write_reg(ES8388_ADDR, ES8388_DACCONTROL4, 0x00);
+
+	/* power down ADC while configuring; volume: +9dB for both channels */
+	res |= es_write_reg(ES8388_ADDR, ES8388_ADCPOWER, 0xff);
+	res |= es_write_reg(ES8388_ADDR, ES8388_ADCCONTROL1, 0x33);
+
+	/* select LINPUT2 / RINPUT2 as ADC input; stereo; 16 bit word length, format right-justified, MCLK / Fs = 256 */
+	res |= es_write_reg(ES8388_ADDR, ES8388_ADCCONTROL2, 0x50);
+	res |= es_write_reg(ES8388_ADDR, ES8388_ADCCONTROL3, 0x00);
+	res |= es_write_reg(ES8388_ADDR, ES8388_ADCCONTROL4, 0x0e);
+	res |= es_write_reg(ES8388_ADDR, ES8388_ADCCONTROL5, 0x02);
+
+	/* set ADC volume */
+	res |= es_write_reg(ES8388_ADDR, ES8388_ADCCONTROL8, 0x20);
+	res |= es_write_reg(ES8388_ADDR, ES8388_ADCCONTROL9, 0x20);
+
+	/* set LOUT1 / ROUT1 volume: 0dB (unattenuated) */
+	res |= es_write_reg(ES8388_ADDR, ES8388_DACCONTROL24, 0x1e);
+	res |= es_write_reg(ES8388_ADDR, ES8388_DACCONTROL25, 0x1e);
+
+	/* power up and enable DAC; power up ADC (no MIC bias) */
+	res |= es_write_reg(ES8388_ADDR, ES8388_DACPOWER, 0x3c);
+	res |= es_write_reg(ES8388_ADDR, ES8388_DACCONTROL3, 0x00);
+	res |= es_write_reg(ES8388_ADDR, ES8388_ADCPOWER, 0x09);
+#else
 	res = i2c_init(); // ESP32 in master mode
 
 	// mute DAC during setup, power up all systems, slave mode
@@ -167,28 +229,12 @@ esp_err_t my_es8388_init(){
 	// single speed mode, ADC MCLK to sampling frequency ratio = 256
 	//res |= es_write_reg(ES8388_ADDR, ES8388_ADCCONTROL5, 0x02);
 
-
-#if(1)
-	// new to play with
-
 	// resolution
 	res |= es_write_reg(ES8388_ADDR, ES8388_DACCONTROL1, 0x02);
 	res |= es_write_reg(ES8388_ADDR, ES8388_ADCCONTROL4, 0x01);
 	// sampling rate
 	res |= es_write_reg(ES8388_ADDR, ES8388_DACCONTROL2, 0x21);
 	res |= es_write_reg(ES8388_ADDR, ES8388_ADCCONTROL5, 0x21);
-
-#else
-	// old working registers
-
-	// resolution
-	res |= es_write_reg(ES8388_ADDR, ES8388_DACCONTROL1, 0x18);
-	res |= es_write_reg(ES8388_ADDR, ES8388_ADCCONTROL4, 0x0e);
-
-	// sampling rate
-	res |= es_write_reg(ES8388_ADDR, ES8388_DACCONTROL2, 0x02);
-	res |= es_write_reg(ES8388_ADDR, ES8388_ADCCONTROL5, 0x02);
-#endif
 
 	// set ADC volume
 	//
@@ -216,6 +262,7 @@ esp_err_t my_es8388_init(){
 	res |= es_write_reg(ES8388_ADDR, ES8388_DACCONTROL3, 0x08);
 	// microphone bias power down (high impedance output, default), int1 low power
 	res |= es_write_reg(ES8388_ADDR, ES8388_ADCPOWER, 0x09);
+#endif
 
 	return res;
 }

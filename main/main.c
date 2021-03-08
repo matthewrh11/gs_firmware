@@ -16,6 +16,8 @@
 #include "es8388.h"
 
 #include "gs_effect_main.h"
+#include "gs_effect_fuzz.h"
+
 
 
 void app_main(void){
@@ -50,6 +52,7 @@ void app_main(void){
 	mclk_init();
 
 	printf("[filter-dsp] Enabling Passthrough mode...\r\n");
+	trem_init();
 	// continuously read data over I2S, pass it through the filtering function and write it back
 	while (true) {
 		run_effects();
