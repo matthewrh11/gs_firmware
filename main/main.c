@@ -51,8 +51,10 @@ void app_main(void){
 	printf("[filter-dsp] Initializing MCLK output...\r\n");
 	mclk_init();
 
-	printf("[filter-dsp] Enabling Passthrough mode...\r\n");
 	trem_init();
+
+	printf("[filter-dsp] Enabling Passthrough mode...\r\n");
+
 	// continuously read data over I2S, pass it through the filtering function and write it back
 	while (true) {
 		run_effects();

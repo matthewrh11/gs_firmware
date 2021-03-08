@@ -13,24 +13,25 @@
 
 //static const char* TAG = "gs_fuzz_effect";
 
+float gain = 0.8;
+#define f_c 5
+#define trem_arr_size SAMPLING_RATE/f_c
+
 //bool gs_fuzz_state = false;
 bool gs_fuzz_state = true;
 
 float fuzz_gain = 5.0;
 
-int32_t max_x_left = 0;
-float max_x_left_fl = 0.0;
-
-int32_t max_x_right = 0;
+int16_t max_x_right = 0;
 float max_x_right_fl = 0.0;
 
-int32_t max_y_left = 0;
-int32_t max_y_right = 0;
+int16_t max_y_left = 0;
+int16_t max_y_right = 0;
 
-
-float trem[I2S_READLEN/sizeof(int16_t)];
-float gain = 0.8;
-float fc = 2.296;
+float fc = (float)f_c;
+float fs = (float)SAMPLING_RATE;
+float trem[trem_arr_size];
+int trem_index = 0;
 
 
 static int16_t fuzz(int16_t x, float max_val){
@@ -47,8 +48,10 @@ static int16_t fuzz(int16_t x, float max_val){
 }
 
 void trem_init(){
-	for (uint32_t i = 0; i < 100; i += 1){
-		trem[i] = (1+gain*sin(2*M_PI*i*(fc/44100)));
+	for (uint32_t i = 0; i < trem_arr_size; i += 1){
+		// wtf is this shit
+		trem[i] = 1.0+gain*sin(2*i*M_PI*fc/fs);
+//		ESP_LOGI("trem", "%f, i: %d", trem[i], i);
 	}
 }
 
@@ -57,14 +60,11 @@ void set_fuzz_state(bool state){
 }
 
 void gs_fuzz_effect(int16_t *input_buffer, size_t input_bytes_read, int16_t *output_buffer) {
-//	max_x_left = max_left(input_buffer, input_bytes_read/2);
-//	max_x_left_fl = (float) max_x_left;
-//
 	max_x_right = max_right(input_buffer, input_bytes_read/2);
 	max_x_right_fl = (float) max_x_right;
+	float temp;
 
-
-	//ESP_LOGI("input_bytes_read = ", "%d", input_bytes_read);
+	// Gimme the fuzz
 	if (gs_fuzz_state){
 
 		// Left channel fuzz
@@ -74,40 +74,32 @@ void gs_fuzz_effect(int16_t *input_buffer, size_t input_bytes_read, int16_t *out
 		}
 		// Right channel fuzz
 		for (uint32_t i = 1; i < input_bytes_read / 2; i += 2){
-			output_buffer[i] = fuzz(input_buffer[i], max_x_right_fl); //input_buffer[i]; //(int32_t)((float)(input_buffer[i])*trem[i]);
-			//ESP_LOGW("RIGHT", "%d, i: %d", output_buffer[i], i);
+			//output_buffer[i] =(int16_t)((float)(input_buffer[i])/(float)(max_x_right)*trem[trem_index]);
+			temp = input_buffer[i]*trem[trem_index]/(max_x_right_fl);
+			output_buffer[i] = (int16_t)(temp*(max_x_right));
+
+//			ESP_LOGI("Tr", "%f, i: %d", trem[trem_index], trem_index);
+//			ESP_LOGE("Tp", "%f, i: %d", temp, i);
+//			ESP_LOGW("O1", "%d, i: %d", output_buffer[i], i);
+//			ESP_LOGI("I ", "%d, i: %d", input_buffer[i], i);
+
+			trem_index++;
+			if (trem_index == ((SAMPLING_RATE/fc)-1)){
+				trem_index = 0;
+			}
+			//output_buffer[i] = fuzz(input_buffer[i], max_x_right_fl); //input_buffer[i]; //(int32_t)((float)(input_buffer[i])*trem[i]);
+		}
+
+
+		max_y_right = max_right(output_buffer, input_bytes_read/2);
+		for (uint32_t i = 1; i < input_bytes_read / 2; i += 2){
+			//output_buffer[i] = output_buffer[i]/max_y_right;
+
+			//ESP_LOGI("I ", "%d, i: %d", input_buffer[i], i);
+			//ESP_LOGW("O2", "%d, i: %d", output_buffer[i], i);
 		}
 
 	}
-
-
-
-//	// Gimme the fuzz
-//	if (gs_fuzz_state && max_x_left != 0) {
-//		// Left channel fuzz
-//		for (uint32_t i = 0; i < input_bytes_read / 2; i += 2){
-//			output_buffer[i] = fuzz(input_buffer[i], max_x_left_fl);
-//			//ESP_LOGI("output_buffer[i] = ", "%d", output_buffer[i]);
-//		}
-//		// Right channel fuzz
-//			for (uint32_t i = 1; i < input_bytes_read / 2; i += 2){
-//				output_buffer[i] =  fuzz(input_buffer[i], max_x_right_fl);
-//				//ESP_LOGI("output_buffer[i] = ", "%d", output_buffer[i]);
-//			}
-//
-//		// Normalize output
-//		// Left
-////		int32_t max_y_left = max_left(output_buffer, input_bytes_read/2);
-////		for (uint32_t i = 0; i < input_bytes_read / 2; i += 2){
-////			output_buffer[i] *= output_buffer[i]/max_y_left;
-////		}
-//		// Right
-//		int32_t max_y_right = max_right(output_buffer, input_bytes_read/2);
-//		for (uint32_t i = 1; i < input_bytes_read / 2; i += 2){
-//			output_buffer[i] *= output_buffer[i]/max_y_right;
-//		}
-//
-//	}
 	// Bypass effects, in -> out
 	else {
 		for (uint32_t i = 0; i < input_bytes_read / 2; i += 1){

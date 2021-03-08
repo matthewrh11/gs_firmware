@@ -9,7 +9,7 @@ void my_i2s_init(){
 #if(1)
 	i2s_config_t i2s_read_config = {
 			.mode = I2S_MODE_MASTER | I2S_MODE_TX | I2S_MODE_RX,
-			.sample_rate = 44100,
+			.sample_rate = SAMPLING_RATE,
 			.bits_per_sample = 16,
 			.communication_format = I2S_COMM_FORMAT_I2S,
 			.channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT,
