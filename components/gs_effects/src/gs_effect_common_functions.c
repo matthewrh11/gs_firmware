@@ -1,6 +1,6 @@
 #include "gs_effect_common_functions.h"
 
-int16_t max_left(int16_t *x, size_t size){
+int16_t max_arr_even(int16_t *x, size_t size){
 	int16_t max_val = abs_val(x[0]);
 	for (size_t i = 0; i < size; i += 2){
 		if (abs_val(x[i]) > max_val){
@@ -10,7 +10,7 @@ int16_t max_left(int16_t *x, size_t size){
 	return max_val;
 }
 
-int16_t max_right(int16_t *x, size_t size){
+int16_t max_arr_odd(int16_t *x, size_t size){
 	int16_t max_val = abs_val(x[1]);
 	for (size_t i = 1; i < size; i += 2){
 		if (abs_val(x[i]) > max_val){
@@ -21,7 +21,7 @@ int16_t max_right(int16_t *x, size_t size){
 }
 
 
-int16_t max(int16_t *x, size_t size){
+int16_t max_arr(int16_t *x, size_t size){
 	int16_t max_val = abs_val(x[0]);
 	for (size_t i = 0; i < size; i += 1){
 		if (abs_val(x[i]) > max_val){

@@ -33,10 +33,18 @@ void run_effects(){
 
 	// Do DSP stuff
 	if (!get_bypass_state()){
-		gs_fuzz_effect(i2s_buffer_read, i2s_bytes_read, i2s_buffer_write);
+
+// Run full chain of effects
+#if(0)
+		gs_tremolo_effect(i2s_buffer_read, i2s_bytes_read, temp_buffer1);
 		//gs_fuzz_effect(temp_buffer1, i2s_bytes_read, temp_buffer2);
 		//gs_fuzz_effect(temp_buffer2, i2s_bytes_read, temp_buffer1);
-		//gs_fuzz_effect(temp_buffer1, i2s_bytes_read, i2s_buffer_write);
+		gs_fuzz_effect(temp_buffer1, i2s_bytes_read, i2s_buffer_write);
+
+// Testing individual effects
+#else
+		gs_fuzz_effect(i2s_buffer_read, i2s_bytes_read, i2s_buffer_write);
+#endif
 	}
 	// Passthrough all data
 	else {

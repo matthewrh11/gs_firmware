@@ -17,6 +17,7 @@
 
 #include "gs_effect_main.h"
 #include "gs_effect_fuzz.h"
+#include "gs_effect_tremolo.h"
 
 
 
@@ -51,7 +52,7 @@ void app_main(void){
 	printf("[filter-dsp] Initializing MCLK output...\r\n");
 	mclk_init();
 
-	trem_init();
+	tremolo_init();
 
 	printf("[filter-dsp] Enabling Passthrough mode...\r\n");
 
