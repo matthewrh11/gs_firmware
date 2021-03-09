@@ -4,4 +4,8 @@
 
 void set_fuzz_state(bool state);
 
-void gs_fuzz_effect(int32_t *input_buffer, size_t input_bytes_read, int32_t *output_buffer);
+void gs_fuzz_effect(int16_t *input_buffer, size_t input_bytes_read, int16_t *output_buffer);
+
+void set_fuzz_gain(float gain);
+
+float get_fuzz_gain();

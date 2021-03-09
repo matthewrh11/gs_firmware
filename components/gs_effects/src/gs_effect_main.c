@@ -14,11 +14,11 @@
 size_t i2s_bytes_read = 0;
 size_t i2s_bytes_written = 0;
 
-int32_t i2s_buffer_read[I2S_READLEN / sizeof(int32_t)];
-int32_t i2s_buffer_write[I2S_READLEN / sizeof(int32_t)];
+int16_t i2s_buffer_read[I2S_READLEN / sizeof(int16_t)];
+int16_t i2s_buffer_write[I2S_READLEN / sizeof(int16_t)];
 
-int32_t temp_buffer1[I2S_READLEN / sizeof(int32_t)];
-int32_t temp_buffer2[I2S_READLEN / sizeof(int32_t)];
+int16_t temp_buffer1[I2S_READLEN / sizeof(int16_t)];
+int16_t temp_buffer2[I2S_READLEN / sizeof(int16_t)];
 
 /*
  * Digital Filtering Code
@@ -29,14 +29,22 @@ int32_t temp_buffer2[I2S_READLEN / sizeof(int32_t)];
 void run_effects(){
 	// continuously read data over I2S, pass it through the filtering function and write it back
 	i2s_bytes_read = I2S_READLEN;
-	i2s_read(I2S_NUM, i2s_buffer_read, I2S_READLEN, &i2s_bytes_read, 100);
+	i2s_read(I2S_NUM, i2s_buffer_read, I2S_READLEN, &i2s_bytes_read, portMAX_DELAY);
 
 	// Do DSP stuff
 	if (!get_bypass_state()){
+
+// Run full chain of effects
+#if(1)
 		gs_fuzz_effect(i2s_buffer_read, i2s_bytes_read, temp_buffer1);
-		gs_fuzz_effect(temp_buffer1, i2s_bytes_read, temp_buffer2);
-		gs_fuzz_effect(temp_buffer2, i2s_bytes_read, temp_buffer1);
-		gs_fuzz_effect(temp_buffer1, i2s_bytes_read, i2s_buffer_write);
+		//gs_fuzz_effect(temp_buffer1, i2s_bytes_read, temp_buffer2);
+		//gs_fuzz_effect(temp_buffer2, i2s_bytes_read, temp_buffer1);
+		gs_tremolo_effect(temp_buffer1, i2s_bytes_read, i2s_buffer_write);
+
+// Testing individual effects
+#else
+		gs_fuzz_effect(i2s_buffer_read, i2s_bytes_read, i2s_buffer_write);
+#endif
 	}
 	// Passthrough all data
 	else {
@@ -44,5 +52,5 @@ void run_effects(){
 	}
 
 	// Write to I2S
-	i2s_write(I2S_NUM, i2s_buffer_write, i2s_bytes_read, &i2s_bytes_written, 100);
+	i2s_write(I2S_NUM, i2s_buffer_write, i2s_bytes_read, &i2s_bytes_written, portMAX_DELAY);
 }

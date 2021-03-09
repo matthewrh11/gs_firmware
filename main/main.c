@@ -1,7 +1,10 @@
 #include <esp_log.h>
+#include <esp_task_wdt.h>
 #include <driver/i2s.h>
 #include <driver/i2c.h>
 #include "board.h"
+
+#include "soc/rtc_wdt.h"
 
 #include "ch_button_press.h"
 
@@ -13,6 +16,9 @@
 #include "es8388.h"
 
 #include "gs_effect_main.h"
+#include "gs_effect_fuzz.h"
+#include "gs_effect_tremolo.h"
+
 
 
 void app_main(void){
@@ -24,7 +30,7 @@ void app_main(void){
 	//gs_wifi_connect("BELL266", "JillRach");
 	gs_wifi_connect("BELL512", "alllowercase");
 
-    vTaskDelay(10000 / portTICK_PERIOD_MS);
+    vTaskDelay(5000 / portTICK_PERIOD_MS);
 
     xTaskCreatePinnedToCore(&aws_iot_task, "aws_iot_task", 9216, NULL, 5, NULL, 1);
 
@@ -46,10 +52,15 @@ void app_main(void){
 	printf("[filter-dsp] Initializing MCLK output...\r\n");
 	mclk_init();
 
+	tremolo_init();
+
 	printf("[filter-dsp] Enabling Passthrough mode...\r\n");
+
 	// continuously read data over I2S, pass it through the filtering function and write it back
 	while (true) {
 		run_effects();
+		//rtc_wdt_feed();
+		//vTaskDelay(10 / portTICK_PERIOD_MS);
 	}
 }
 

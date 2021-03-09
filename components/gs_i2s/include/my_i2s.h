@@ -5,7 +5,10 @@
 
 #define I2S_NUM I2S_NUM_0
 #define I2S_READLEN 50 * 4
+#define SAMPLING_RATE 44100
 
 void my_i2s_init();
 
 void mclk_init();
+
+
