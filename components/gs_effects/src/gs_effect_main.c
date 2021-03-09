@@ -35,11 +35,11 @@ void run_effects(){
 	if (!get_bypass_state()){
 
 // Run full chain of effects
-#if(0)
-		gs_tremolo_effect(i2s_buffer_read, i2s_bytes_read, temp_buffer1);
+#if(1)
+		gs_fuzz_effect(i2s_buffer_read, i2s_bytes_read, temp_buffer1);
 		//gs_fuzz_effect(temp_buffer1, i2s_bytes_read, temp_buffer2);
 		//gs_fuzz_effect(temp_buffer2, i2s_bytes_read, temp_buffer1);
-		gs_fuzz_effect(temp_buffer1, i2s_bytes_read, i2s_buffer_write);
+		gs_tremolo_effect(temp_buffer1, i2s_bytes_read, i2s_buffer_write);
 
 // Testing individual effects
 #else

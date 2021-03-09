@@ -31,7 +31,7 @@ int16_t max_arr(int16_t *x, size_t size){
 	return max_val;
 }
 
-float sign(int x){
+float sign(float x){
 	if (x > 0){
 		return 1.0;
 	}

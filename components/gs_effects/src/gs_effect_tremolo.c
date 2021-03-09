@@ -15,8 +15,8 @@
 #define f_c 5
 #define trem_arr_size SAMPLING_RATE/f_c
 
-//bool gs_tremolo_state = false; // IMPORTANT: have this set to false for start-up
-bool gs_tremolo_state = true; // for testing without app
+bool gs_tremolo_state = false; // IMPORTANT: have this set to false for start-up
+//bool gs_tremolo_state = true; // for testing without app
 
 int16_t trem_max_x_odd = 0;
 float trem_max_x_odd_fl = 0.0;
