@@ -2,8 +2,8 @@
 
 #include <string.h>
 
-#include "gs_effect_flanger.h"
 #include "gs_effect_fuzz.h"
+#include "gs_effect_ring.h"
 #include "gs_effect_tremolo.h"
 
 
@@ -16,8 +16,8 @@ void gs_effect_router(char* effect, bool state) {
 		set_fuzz_state(state);
 		return;
 	}
-	else if (strncmp(effect, "Flanger", strlen("Flanger")) == 0) {
-		set_fuzz_state(state);
+	else if (strncmp(effect, "Ring", strlen("Ring")) == 0) {
+		set_ring_state(state);
 		return;
 	}
 }

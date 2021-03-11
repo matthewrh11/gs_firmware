@@ -16,8 +16,8 @@
 #include "es8388.h"
 
 #include "gs_effect_main.h"
-#include "gs_effect_flanger.h"
 #include "gs_effect_fuzz.h"
+#include "gs_effect_ring.h"
 #include "gs_effect_tremolo.h"
 
 
@@ -54,7 +54,7 @@ void app_main(void){
 	mclk_init();
 
 	tremolo_init();
-	flanger_init();
+	ring_init();
 
 	printf("[filter-dsp] Enabling Passthrough mode...\r\n");
 

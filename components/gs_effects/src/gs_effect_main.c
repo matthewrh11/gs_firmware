@@ -6,8 +6,8 @@
 #include "my_i2s.h"
 
 #include "gs_effect_bypass.h"
-#include "gs_effect_flanger.h"
 #include "gs_effect_fuzz.h"
+#include "gs_effect_ring.h"
 #include "gs_effect_tremolo.h"
 
 #define TAG1 "here"
@@ -44,7 +44,7 @@ void run_effects(){
 
 // Testing individual effects
 #else
-		gs_flanger_effect(i2s_buffer_read, i2s_bytes_read, i2s_buffer_write);
+		gs_ring_effect(i2s_buffer_read, i2s_bytes_read, i2s_buffer_write);
 #endif
 	}
 	// Passthrough all data
