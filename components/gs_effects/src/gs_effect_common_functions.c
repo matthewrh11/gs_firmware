@@ -49,3 +49,10 @@ int16_t abs_val(int16_t x){
 	}
 	return x;
 }
+
+float abs_float(float x){
+	if (x < 0){
+		x *= -1;
+	}
+	return x;
+}

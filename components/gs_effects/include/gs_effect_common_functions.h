@@ -11,3 +11,5 @@ int16_t max_arr(int16_t* x, size_t size);
 float sign(float x);
 
 int16_t abs_val(int16_t x);
+
+float abs_float(float x);

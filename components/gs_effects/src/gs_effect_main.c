@@ -6,6 +6,7 @@
 #include "my_i2s.h"
 
 #include "gs_effect_bypass.h"
+#include "gs_effect_flanger.h"
 #include "gs_effect_fuzz.h"
 #include "gs_effect_tremolo.h"
 
@@ -35,7 +36,7 @@ void run_effects(){
 	if (!get_bypass_state()){
 
 // Run full chain of effects
-#if(1)
+#if(0)
 		gs_fuzz_effect(i2s_buffer_read, i2s_bytes_read, temp_buffer1);
 		//gs_fuzz_effect(temp_buffer1, i2s_bytes_read, temp_buffer2);
 		//gs_fuzz_effect(temp_buffer2, i2s_bytes_read, temp_buffer1);
@@ -43,7 +44,7 @@ void run_effects(){
 
 // Testing individual effects
 #else
-		gs_fuzz_effect(i2s_buffer_read, i2s_bytes_read, i2s_buffer_write);
+		gs_flanger_effect(i2s_buffer_read, i2s_bytes_read, i2s_buffer_write);
 #endif
 	}
 	// Passthrough all data
