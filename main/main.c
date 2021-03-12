@@ -17,6 +17,7 @@
 
 #include "gs_effect_main.h"
 #include "gs_effect_fuzz.h"
+#include "gs_effect_overdrive.h"
 #include "gs_effect_ring.h"
 #include "gs_effect_tremolo.h"
 

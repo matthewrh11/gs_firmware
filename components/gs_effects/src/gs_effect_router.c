@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "gs_effect_fuzz.h"
+#include "gs_effect_overdrive.h"
 #include "gs_effect_ring.h"
 #include "gs_effect_tremolo.h"
 
@@ -18,6 +19,10 @@ void gs_effect_router(char* effect, bool state) {
 	}
 	else if (strncmp(effect, "Ring", strlen("Ring")) == 0) {
 		set_ring_state(state);
+		return;
+	}
+	else if (strncmp(effect, "Overdrive", strlen("Overdrive")) == 0) {
+		set_od_state(state);
 		return;
 	}
 }

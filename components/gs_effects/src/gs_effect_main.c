@@ -7,6 +7,7 @@
 
 #include "gs_effect_bypass.h"
 #include "gs_effect_fuzz.h"
+#include "gs_effect_overdrive.h"
 #include "gs_effect_ring.h"
 #include "gs_effect_tremolo.h"
 
@@ -36,15 +37,15 @@ void run_effects(){
 	if (!get_bypass_state()){
 
 // Run full chain of effects
-#if(0)
+#if(1)
 		gs_fuzz_effect(i2s_buffer_read, i2s_bytes_read, temp_buffer1);
-		//gs_fuzz_effect(temp_buffer1, i2s_bytes_read, temp_buffer2);
-		//gs_fuzz_effect(temp_buffer2, i2s_bytes_read, temp_buffer1);
+		gs_od_effect(temp_buffer1, i2s_bytes_read, temp_buffer2);
+		gs_ring_effect(temp_buffer2, i2s_bytes_read, temp_buffer1);
 		gs_tremolo_effect(temp_buffer1, i2s_bytes_read, i2s_buffer_write);
 
 // Testing individual effects
 #else
-		gs_ring_effect(i2s_buffer_read, i2s_bytes_read, i2s_buffer_write);
+		gs_od_effect(i2s_buffer_read, i2s_bytes_read, i2s_buffer_write);
 #endif
 	}
 	// Passthrough all data
