@@ -10,7 +10,7 @@
 #include <math.h>
 
 //static const char* TAG = "gs_ring_effect";
-#define f_c 5
+#define f_c 2
 #define sin_ref_arr_size SAMPLING_RATE/f_c
 
 bool gs_ring_state = false; // IMPORTANT: have this set to false for start-up

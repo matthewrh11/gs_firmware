@@ -16,7 +16,7 @@
 bool gs_fuzz_state = false; // IMPORTANT: have this set to false for start-up
 //bool gs_fuzz_state = true; // for testing without app
 
-float fuzz_gain = 3.0;
+float fuzz_gain = 5.0;
 
 int16_t fuzz_max_x_odd = 0;
 float fuzz_max_x_odd_fl = 0.0;

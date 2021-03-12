@@ -19,8 +19,8 @@ size_t i2s_bytes_written = 0;
 int16_t i2s_buffer_read[I2S_READLEN / sizeof(int16_t)];
 int16_t i2s_buffer_write[I2S_READLEN / sizeof(int16_t)];
 
-int16_t temp_buffer1[I2S_READLEN / sizeof(int16_t)];
-int16_t temp_buffer2[I2S_READLEN / sizeof(int16_t)];
+//int16_t temp_buffer1[I2S_READLEN / sizeof(int16_t)];
+//int16_t temp_buffer2[I2S_READLEN / sizeof(int16_t)];
 
 /*
  * Digital Filtering Code
@@ -38,10 +38,11 @@ void run_effects(){
 
 // Run full chain of effects
 #if(1)
-		gs_fuzz_effect(i2s_buffer_read, i2s_bytes_read, temp_buffer1);
-		gs_od_effect(temp_buffer1, i2s_bytes_read, temp_buffer2);
-		gs_ring_effect(temp_buffer2, i2s_bytes_read, temp_buffer1);
-		gs_tremolo_effect(temp_buffer1, i2s_bytes_read, i2s_buffer_write);
+		gs_fuzz_effect(i2s_buffer_read, i2s_bytes_read, i2s_buffer_write);
+		gs_od_effect(i2s_buffer_write, i2s_bytes_read, i2s_buffer_read);
+		gs_ring_effect(i2s_buffer_read, i2s_bytes_read, i2s_buffer_write);
+		gs_tremolo_effect(i2s_buffer_write, i2s_bytes_read, i2s_buffer_read);
+		gs_bypass_effect(i2s_buffer_read, i2s_bytes_read, i2s_buffer_write);
 
 // Testing individual effects
 #else
