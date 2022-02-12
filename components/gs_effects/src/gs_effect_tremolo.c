@@ -25,8 +25,8 @@ int16_t trem_max_y_odd = 0;
 
 
 float gain = 0.8;
-float fc = (float)f_c;
-float fs = (float)SAMPLING_RATE;
+static float fc = (float)f_c;
+static float fs = (float)SAMPLING_RATE;
 float trem[trem_arr_size];
 int trem_index = 0;
 
